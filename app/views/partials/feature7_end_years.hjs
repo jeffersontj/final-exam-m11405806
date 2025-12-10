@@ -1,0 +1,19 @@
+<div class="form-group fade-in">
+    <label class="form-label">3. To Year:</label>
+    <select class="form-control" name="end_year" required>
+        <option value="">-- Select End Year --</option>
+        {{#years}}
+            <option value="{{year}}">{{year}}</option>
+        {{/years}}
+    </select>
+</div>
+
+<button type="button" 
+        class="btn-action fade-in" 
+        style="background-color: #e74c3c; width: 100%;"
+        hx-post="/api/feature7/delete"
+        hx-target="#result-area"
+        hx-confirm="Are you sure you want to delete these records?"
+        hx-include="closest form">
+    Delete Records
+</button>

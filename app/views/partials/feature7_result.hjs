@@ -1,0 +1,8 @@
+<div class="alert alert-success fade-in">
+    <h4>Deletion Successful</h4>
+    <p>
+        Removed <strong>{{deleted_count}}</strong> record(s) 
+        from year {{start}} to {{end}}.
+    </p>
+    <button class="btn btn-sm btn-outline-dark" hx-get="/features/7" hx-target="#main-container">Delete More</button>
+</div>

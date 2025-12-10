@@ -371,6 +371,69 @@ app.post('/api/feature6/update', async (req, res) => {
     }
 });
 
+// --- FEATURE 7 ROUTES ---
+
+// 1. Initial View (Country List)
+app.get('/features/7', async (req, res) => {
+    try {
+        const [countries] = await pool.query("SELECT id, name FROM Countries ORDER BY name ASC");
+        res.render('partials/feature7_form', { layout: false, countries });
+    } catch (err) { res.send('Error loading feature'); }
+});
+
+// 2. Load Start Years (All available years for country)
+app.get('/api/feature7/start_years', async (req, res) => {
+    const countryId = req.query.country_id;
+    if (!countryId) return res.send('');
+
+    try {
+        const query = `SELECT year FROM Observations WHERE country_id = ? ORDER BY year ASC`;
+        const [years] = await pool.query(query, [countryId]);
+        
+        res.render('partials/feature7_start_years', { 
+            layout: false, 
+            years: years, 
+            country_id: countryId 
+        });
+    } catch (err) { res.send('Error loading start years'); }
+});
+
+// 3. Load End Years (Must be >= Start Year)
+app.get('/api/feature7/end_years', async (req, res) => {
+    const { country_id, start_year } = req.query;
+    if (!start_year) return res.send('');
+
+    try {
+        const query = `SELECT year FROM Observations WHERE country_id = ? AND year >= ? ORDER BY year ASC`;
+        const [years] = await pool.query(query, [country_id, start_year]);
+
+        res.render('partials/feature7_end_years', { 
+            layout: false, 
+            years: years 
+        });
+    } catch (err) { res.send('Error loading end years'); }
+});
+
+// 4. Process Delete
+app.post('/api/feature7/delete', async (req, res) => {
+    const { country_id, start_year, end_year } = req.body;
+
+    try {
+        const query = `DELETE FROM Observations WHERE country_id = ? AND year BETWEEN ? AND ?`;
+        const [result] = await pool.query(query, [country_id, start_year, end_year]);
+
+        res.render('partials/feature7_result', { 
+            layout: false, 
+            deleted_count: result.affectedRows,
+            start: start_year,
+            end: end_year
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('<div class="alert alert-danger">Delete failed.</div>');
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port 5806`);

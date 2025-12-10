@@ -1,0 +1,26 @@
+<div class="card fade-in">
+    <h3>Feature 7: Delete Data Range</h3>
+    <p class="text-danger">Warning: This action will permanently remove records.</p>
+
+    <form>
+        
+        <div class="form-group">
+            <label class="form-label">1. Select Country:</label>
+            <select class="form-control" name="country_id"
+                    hx-get="/api/feature7/start_years"
+                    hx-target="#start-container"
+                    hx-trigger="change">
+                <option value="">-- Select Country --</option>
+                {{#countries}}
+                    <option value="{{id}}">{{name}}</option>
+                {{/countries}}
+            </select>
+        </div>
+
+        <div id="start-container"></div>
+
+        <div id="end-container"></div>
+    </form>
+
+    <div id="result-area" style="margin-top: 20px;"></div>
+</div>
