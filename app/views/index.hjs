@@ -1,13 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Exam {{ studentId }}</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
-    <h1>Life Expectancy App - Student {{ studentId }}</h1>
-    <p>{{ message }}</p>
-    <hr>
-    <p>Ready to implement search and updates.</p>
+
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h2>Life Expectancy Dashboard</h2>
+            <small>ID: {{ studentId }}</small>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" hx-get="/features/welcome" hx-target="#main-container">🏠 Home</a></li>
+            <li><a href="#" hx-get="/features/1" hx-target="#main-container">1. Country History</a></li>
+            <li><a href="#" hx-get="/features/2" hx-target="#main-container">2. Sub-Region Rank</a></li>
+            <li><a href="#" hx-get="/features/3" hx-target="#main-container">3. Region Stats</a></li>
+            <li><a href="#" hx-get="/features/4" hx-target="#main-container">4. Search Country</a></li>
+            <li><a href="#" hx-get="/features/5" hx-target="#main-container">5. Add Record</a></li>
+            <li><a href="#" hx-get="/features/6" hx-target="#main-container">6. Update Record</a></li>
+            <li><a href="#" hx-get="/features/7" hx-target="#main-container">7. Delete Records</a></li>
+            <li><a href="#" hx-get="/features/8" hx-target="#main-container">8. Special Feature</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content" id="main-container">
+        <div class="card">
+            <h3>Welcome to the Dashboard</h3>
+            <p>Select a feature from the sidebar to begin.</p>
+            <p class="text-muted">Developed by {{ studentId }} for Software Engineering Exam.</p>
+        </div>
+    </main>
+
+    <script>
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>

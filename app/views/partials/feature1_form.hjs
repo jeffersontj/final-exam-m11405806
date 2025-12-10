@@ -1,0 +1,21 @@
+<div class="card fade-in">
+    <h3>Feature 1: Country History</h3>
+    <p>View Life Expectancy at Birth for a country over the years (Newest first).</p>
+
+    <form class="form-group">
+        <label class="form-label">Select Country:</label>
+        <select class="form-control" name="country_id" 
+                hx-get="/api/feature1/result" 
+                hx-target="#result-area" 
+                hx-trigger="change">
+            <option value="">-- Select a Country --</option>
+            {{#countries}}
+                <option value="{{id}}">{{name}}</option>
+            {{/countries}}
+        </select>
+    </form>
+
+    <div id="result-area">
+        <p class="text-muted">No country selected.</p>
+    </div>
+</div>
