@@ -1,0 +1,17 @@
+<form hx-post="/api/feature5/add" hx-target="#input-area">
+    
+    <div class="alert alert-info">
+        {{{message}}}<br>
+        Adding new record for: <strong>{{next_year}}</strong>.
+    </div>
+
+    <input type="hidden" name="country_id" value="{{country_id}}">
+    <input type="hidden" name="year" value="{{next_year}}">
+
+    <div class="form-group">
+        <label class="form-label">Life Expectancy Value (Year {{next_year}}):</label>
+        <input type="number" step="0.01" class="form-control" name="value" placeholder="e.g. 75.5" required>
+    </div>
+
+    <button type="submit" class="btn-action w-100">Save Record</button>
+</form>

@@ -1,0 +1,19 @@
+<div class="card fade-in">
+    <h3>Feature 5: Add New Record</h3>
+    <p>Select a country to add data for the <strong>next available year</strong>.</p>
+
+    <div class="form-group">
+        <label class="form-label">Select Country:</label>
+        <select class="form-control" name="country_id" 
+                hx-get="/api/feature5/prepare" 
+                hx-target="#input-area" 
+                hx-trigger="change">
+            <option value="">-- Select Country --</option>
+            {{#countries}}
+                <option value="{{id}}">{{name}}</option>
+            {{/countries}}
+        </select>
+    </div>
+
+    <div id="input-area" style="margin-top: 20px;"></div>
+</div>

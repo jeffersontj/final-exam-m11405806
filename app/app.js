@@ -219,6 +219,89 @@ app.get('/api/feature4/result', async (req, res) => {
     }
 });
 
+// --- FEATURE 5 ROUTES ---
+
+// 1. Get the Main Form
+app.get('/features/5', async (req, res) => {
+    try {
+        const [countries] = await pool.query("SELECT id, name FROM Countries ORDER BY name ASC");
+        res.render('partials/feature5_form', { layout: false, countries: countries });
+    } catch (err) { res.send('Error loading form'); }
+});
+
+// 2. Prepare Input (Calculate Next Year)
+app.get('/api/feature5/prepare', async (req, res) => {
+    const countryId = req.query.country_id;
+    if (!countryId) return res.send('');
+
+    try {
+        // Find the latest year for this country
+        const query = `SELECT MAX(year) as max_year FROM Observations WHERE country_id = ?`;
+        const [rows] = await pool.query(query, [countryId]);
+        
+        let prevYear = rows[0].max_year;
+        let nextYear;
+        let message = '';
+
+        if (prevYear) {
+            // Data exists
+            nextYear = prevYear + 1;
+            message = `Latest data found: <strong>${prevYear}</strong>.`;
+        } else {
+            // No data exists -> Set default to Current Year (2025)
+            prevYear = "Not Found";
+            nextYear = 2025; 
+            message = `No previous data found - Next data input as current year (2025)`;
+        }
+
+        res.render('partials/feature5_input', { 
+            layout: false, 
+            country_id: countryId,
+            next_year: nextYear,
+            message: message 
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('<div class="alert alert-danger">Error retrieving year data.</div>');
+    }
+});
+
+// 3. Add the Record (POST)
+app.post('/api/feature5/add', async (req, res) => {
+    const { country_id, year, value } = req.body;
+
+    // Basic Validation
+    if (!value || isNaN(value)) {
+        return res.send('<div class="alert alert-danger">Please enter a valid numeric value.</div>');
+    }
+
+    try {
+        // 1. Ensure the Year exists in the Years table
+        await pool.query("INSERT IGNORE INTO Years (year) VALUES (?)", [year]);
+
+        // 2. Insert the Observation (Assuming Indicator ID 1 is Life Expectancy)
+        const insertQuery = `
+            INSERT INTO Observations (country_id, year, indicator_id, value) 
+            VALUES (?, ?, 1, ?)
+        `;
+        await pool.query(insertQuery, [country_id, year, value]);
+
+        res.render('partials/feature5_result', { 
+            layout: false, 
+            year: year, 
+            value: value 
+        });
+
+    } catch (err) {
+        console.error(err);
+        if (err.code === 'ER_DUP_ENTRY') {
+            res.send('<div class="alert alert-warning">Data for this year already exists!</div>');
+        } else {
+            res.send('<div class="alert alert-danger">Database error: Could not save record.</div>');
+        }
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port 5806`);

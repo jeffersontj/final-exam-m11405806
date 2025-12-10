@@ -1,0 +1,9 @@
+<div class="alert alert-success fade-in">
+    <h4>Success!</h4>
+    <p>New Life Expectancy record added.</p>
+    <ul>
+        <li><strong>Year:</strong> {{year}}</li>
+        <li><strong>Value:</strong> {{value}}</li>
+    </ul>
+    <button class="btn btn-sm btn-outline-success" hx-get="/features/5" hx-target="#main-container">Add Another</button>
+</div>
