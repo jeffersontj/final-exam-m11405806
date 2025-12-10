@@ -1,0 +1,25 @@
+{{#data.length}}
+    <h4 class="text-muted">Sub-Region Averages for {{selectedYear}}</h4>
+    <table class="table-animate">
+        <thead>
+            <tr>
+                <th>Sub-Region</th>
+                <th>Average Life Expectancy</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#data}}
+            <tr>
+                <td>{{sub_region_name}}</td>
+                <td><strong>{{average_le}} Years</strong></td>
+            </tr>
+            {{/data}}
+        </tbody>
+    </table>
+{{/data.length}}
+
+{{^data.length}}
+    <div style="padding: 15px; background: #fff3cd; color: #856404; border-radius: 4px;">
+        No data available for this Region in {{selectedYear}}.
+    </div>
+{{/data.length}}

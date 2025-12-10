@@ -1,0 +1,39 @@
+<div class="card fade-in">
+    <h3>Feature 3: Regional Statistics</h3>
+    <p>View average Life Expectancy for all Sub-Regions within a specific Region.</p>
+
+    <form class="form-group" 
+          hx-get="/api/feature3/result" 
+          hx-target="#result-area-f3" 
+          hx-trigger="submit">
+        
+        <div class="row" style="display: flex; gap: 15px;">
+            <div style="flex: 1;">
+                <label class="form-label">Region:</label>
+                <select class="form-control" name="region_id" required>
+                    <option value="">-- Select Region --</option>
+                    {{#regions}}
+                        <option value="{{id}}">{{name}}</option>
+                    {{/regions}}
+                </select>
+            </div>
+
+            <div style="flex: 1;">
+                <label class="form-label">Year:</label>
+                <select class="form-control" name="year" required>
+                    <option value="">-- Select Year --</option>
+                    {{#years}}
+                        <option value="{{year}}">{{year}}</option>
+                    {{/years}}
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-action" style="margin-top: 15px; width: 100%;">
+            Calculate Averages
+        </button>
+    </form>
+
+    <div id="result-area-f3" style="margin-top: 20px;">
+        </div>
+</div>

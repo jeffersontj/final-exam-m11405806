@@ -110,7 +110,68 @@ app.get('/api/feature2/result', async (req, res) => {
     }
 });
 
+// --- FEATURE 3 ROUTES ---
+
+// 1. Get the Form View
+app.get('/features/3', async (req, res) => {
+    try {
+        // Fetch Regions and Years for dropdowns
+        const [regions] = await pool.query("SELECT id, name FROM Regions ORDER BY name ASC");
+        const [years] = await pool.query("SELECT year FROM Years ORDER BY year DESC");
+        
+        res.render('partials/feature3_form', { 
+            layout: false, 
+            regions: regions, 
+            years: years 
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('Error loading feature options');
+    }
+});
+
+// 2. Get the Result Data (Average Calculation)
+app.get('/api/feature3/result', async (req, res) => {
+    const { region_id, year } = req.query;
+
+    if (!region_id || !year) {
+        return res.send('<div class="alert alert-warning">Please select both a Region and a Year.</div>');
+    }
+
+    try {
+        // Query: Join Region -> SubRegion -> Country -> Observation
+        // Calculate Average Value grouped by SubRegion
+        const query = `
+            SELECT sr.name AS sub_region_name, AVG(o.value) AS average_le
+            FROM Regions r
+            JOIN SubRegions sr ON r.id = sr.region_id
+            JOIN Countries c ON sr.id = c.sub_region_id
+            JOIN Observations o ON c.id = o.country_id
+            WHERE r.id = ? AND o.year = ?
+            GROUP BY sr.id, sr.name
+            ORDER BY r.name ASC, average_le ASC
+        `;
+        
+        const [rows] = await pool.query(query, [region_id, year]);
+
+        // Format average to 2 decimal places
+        const formattedRows = rows.map(row => ({
+            sub_region_name: row.sub_region_name,
+            average_le: parseFloat(row.average_le).toFixed(2)
+        }));
+
+        res.render('partials/feature3_result', { 
+            layout: false, 
+            data: formattedRows,
+            selectedYear: year
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('Error calculating statistics');
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on port 5806`);
 });
