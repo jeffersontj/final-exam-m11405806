@@ -12,6 +12,7 @@
     <nav class="sidebar">
         <div class="sidebar-header">
             <h2>Life Expectancy Dashboard</h2>
+            <small>By: Cornelius Jefferson Tjahjono</small><br>
             <small>ID: {{ studentId }}</small>
         </div>
         <ul class="nav-links">
@@ -31,7 +32,7 @@
         <div class="card">
             <h3>Welcome to the Dashboard</h3>
             <p>Select a feature from the sidebar to begin.</p>
-            <p class="text-muted">Developed by {{ studentId }} for Software Engineering Exam.</p>
+            <p class="text-muted">Developed by Cornelius Jefferson Tjahjono ({{ studentId }}) for Software Engineering in Construction Information Systems - Final Exam</p>
         </div>
     </main>
 

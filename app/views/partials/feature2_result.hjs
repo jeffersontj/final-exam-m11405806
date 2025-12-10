@@ -1,0 +1,27 @@
+{{#data.length}}
+    <h4 class="text-muted">Rankings for {{selectedYear}}</h4>
+    <table class="table-animate">
+        <thead>
+            <tr>
+                <th style="width: 50px;">Rank</th>
+                <th>Country</th>
+                <th>Life Expectancy</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#data}}
+            <tr>
+                <td style="font-weight:bold; color: #7f8c8d;">#{{rank}}</td> 
+                <td>{{country_name}}</td>
+                <td><strong>{{life_expectancy}}</strong></td>
+            </tr>
+            {{/data}}
+        </tbody>
+    </table>
+{{/data.length}}
+
+{{^data.length}}
+    <div style="padding: 15px; background: #fff3cd; color: #856404; border-radius: 4px;">
+        No data found for this specific combination of Sub-Region and Year.
+    </div>
+{{/data.length}}

@@ -56,6 +56,60 @@ app.get('/api/feature1/result', async (req, res) => {
     } catch (err) { res.send('Error fetching data'); }
 });
 
+// --- FEATURE 2 ROUTES ---
+
+// 1. Get the Form View (Load Dropdowns)
+app.get('/features/2', async (req, res) => {
+    try {
+        // Fetch SubRegions and Years in parallel
+        const [subRegions] = await pool.query("SELECT id, name FROM SubRegions ORDER BY name ASC");
+        const [years] = await pool.query("SELECT year FROM Years ORDER BY year DESC");
+        
+        res.render('partials/feature2_form', { 
+            layout: false, 
+            subRegions: subRegions, 
+            years: years 
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('Error loading feature options');
+    }
+});
+
+// 2. Get the Result Data
+app.get('/api/feature2/result', async (req, res) => {
+    const { sub_region_id, year } = req.query;
+
+    if (!sub_region_id || !year) {
+        return res.send('<div class="alert alert-warning">Please select both a Sub-Region and a Year.</div>');
+    }
+
+    try {
+        const query = `
+            SELECT c.name as country_name, o.value as life_expectancy
+            FROM Countries c
+            JOIN Observations o ON c.id = o.country_id
+            WHERE c.sub_region_id = ? AND o.year = ?
+            ORDER BY o.value ASC
+        `;
+        const [rows] = await pool.query(query, [sub_region_id, year]);
+        const rankedRows = rows.map((row, index) => ({
+            rank: index + 1, // 1, 2, 3...
+            country_name: row.country_name,
+            life_expectancy: row.life_expectancy
+        }));
+
+        res.render('partials/feature2_result', { 
+            layout: false, 
+            data: rankedRows, // Send the modified array
+            selectedYear: year
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('Error processing request');
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
