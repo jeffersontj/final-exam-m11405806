@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam {{ studentId }}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+    <h1>Life Expectancy App - Student {{ studentId }}</h1>
+    <p>{{ message }}</p>
+    <hr>
+    <p>Ready to implement search and updates.</p>
+</body>
+</html>

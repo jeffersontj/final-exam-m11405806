@@ -83,14 +83,14 @@ CREATE TABLE IF NOT EXISTS staging_locations (
     name VARCHAR(255),
     alpha_2 VARCHAR(10),
     alpha_3 VARCHAR(10),
-    country_code INT,
+    country_code VARCHAR(10),
     iso_3166_2 VARCHAR(50),
     region VARCHAR(100),
     sub_region VARCHAR(100),
     intermediate_region VARCHAR(100),
-    region_code INT,
-    sub_region_code INT,
-    intermediate_region_code INT
+    region_code VARCHAR(10),
+    sub_region_code VARCHAR(10),
+    intermediate_region_code VARCHAR(10)
 );
 
 -- LOAD DATA (Handling \n and \r\n line endings)
@@ -136,5 +136,6 @@ SELECT c.id, sf.Year, 1, sf.LifeExpectancy
 FROM staging_facts sf JOIN Countries c ON sf.Code = c.iso_alpha3
 WHERE sf.LifeExpectancy IS NOT NULL;
 
+-- CLEANUP
 DROP TABLE staging_facts;
 DROP TABLE staging_locations;

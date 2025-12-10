@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: db_m11405806
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: life_expectancy
+      MYSQL_USER: user5806
+      MYSQL_PASSWORD: password5806
+    ports:
+      - "15806:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./etl.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data:/var/lib/mysql-files
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  app:
+    build: .
+    container_name: app_m11405806
+    ports:
+      - "5806:3000"
+    environment:
+      DB_HOST: db
+      DB_USER: user5806
+      DB_PASSWORD: password5806
+      DB_NAME: life_expectancy
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/usr/src/app
+      - /usr/src/app/node_modules
+
+volumes:
+  db_data:
