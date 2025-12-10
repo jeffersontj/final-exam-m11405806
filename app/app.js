@@ -434,6 +434,90 @@ app.post('/api/feature7/delete', async (req, res) => {
     }
 });
 
+// --- FEATURE 8 ROUTES ---
+
+// 1. Initial View: Load Country List
+app.get('/features/8', async (req, res) => {
+    try {
+        const [countries] = await pool.query("SELECT id, name FROM Countries ORDER BY name ASC");
+        res.render('partials/feature8_form', { layout: false, countries });
+    } catch (err) { res.send('Error loading feature'); }
+});
+
+// 2. Process Country Profile
+app.get('/api/feature8/result', async (req, res) => {
+    const { country_id } = req.query;
+    if (!country_id) return res.send('');
+
+    try {
+        // We use LEFT JOIN for ALL geography tables. 
+        // This ensures Countries like Antarctica (which have no region) still appear.
+        const detailsQuery = `
+            SELECT 
+                c.name, c.iso_alpha2, c.iso_alpha3, c.country_code,
+                r.name AS region, 
+                sr.name AS sub_region, 
+                ir.name AS intermediate_region
+            FROM Countries c
+            LEFT JOIN SubRegions sr ON c.sub_region_id = sr.id
+            LEFT JOIN Regions r ON sr.region_id = r.id
+            LEFT JOIN IntermediateRegions ir ON c.intermediate_region_id = ir.id
+            WHERE c.id = ?
+        `;
+
+        const statsQuery = `
+            SELECT 
+                MIN(year) AS start_year,
+                MAX(year) AS end_year,
+                MIN(value) AS min_val,
+                MAX(value) AS max_val,
+                AVG(value) AS avg_val,
+                COUNT(*) AS total_records
+            FROM Observations
+            WHERE country_id = ?
+        `;
+
+        const latestQuery = `
+            SELECT year, value 
+            FROM Observations 
+            WHERE country_id = ? 
+            ORDER BY year DESC 
+            LIMIT 1
+        `;
+
+        const [detailsRows] = await pool.query(detailsQuery, [country_id]);
+        const [statsRows] = await pool.query(statsQuery, [country_id]);
+        const [latestRows] = await pool.query(latestQuery, [country_id]);
+
+        const country = detailsRows[0];
+        const stats = statsRows[0];
+        const latest = latestRows[0];
+
+        // If geography info is missing, replace it with "-"
+        country.region = country.region || '-';
+        country.sub_region = country.sub_region || '-';
+        country.intermediate_region = country.intermediate_region || '-';
+
+        const hasData = stats.total_records > 0;
+
+        res.render('partials/feature8_result', { 
+            layout: false, 
+            country: country,
+            hasData: hasData, 
+            stats: hasData ? {
+                ...stats,
+                avg_val: parseFloat(stats.avg_val || 0).toFixed(2),
+                span: (stats.end_year - stats.start_year)
+            } : null,
+            latest: latest
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.send('Error retrieving profile');
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port 5806`);

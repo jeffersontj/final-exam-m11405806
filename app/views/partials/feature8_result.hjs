@@ -1,0 +1,70 @@
+<div style="border: 1px solid #ddd; border-radius: 8px; overflow: hidden; background: white;">
+    
+    <div style="background-color: #2c3e50; color: white; padding: 20px;">
+        <h2 style="margin: 0;">{{country.name}}</h2>
+        <div style="margin-top: 10px;">
+            <span class="badge bg-primary">{{country.iso_alpha3}}</span>
+        </div>
+    </div>
+
+    <div style="padding: 20px;">
+        
+        <h5 class="text-muted" style="border-bottom: 2px solid #eee; padding-bottom: 10px;">🌍 Geographical Location</h5>
+        <table class="table" style="margin-bottom: 20px;">
+            <tr>
+                <th style="width: 40%;">Region:</th>
+                <td>{{country.region}}</td>
+            </tr>
+            <tr>
+                <th>Sub-Region:</th>
+                <td>{{country.sub_region}}</td>
+            </tr>
+            <tr>
+                <th>Intermediate Region:</th>
+                <td>{{country.intermediate_region}}</td>
+            </tr>
+        </table>
+
+        <h5 class="text-muted" style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 20px;">📊 Life Expectancy Statistics</h5>
+        
+        {{#hasData}}
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <div style="flex: 1; background: #e3f2fd; padding: 15px; border-radius: 6px; text-align: center;">
+                    <small>Latest Data ({{latest.year}})</small><br>
+                    <strong style="font-size: 1.5rem; color: #0d47a1;">{{latest.value}}</strong>
+                </div>
+                <div style="flex: 1; background: #fff3e0; padding: 15px; border-radius: 6px; text-align: center;">
+                    <small>Historical Average</small><br>
+                    <strong style="font-size: 1.5rem; color: #e65100;">{{stats.avg_val}}</strong>
+                </div>
+            </div>
+
+            <table class="table">
+                <tr>
+                    <th>Data Range:</th>
+                    <td>{{stats.start_year}} — {{stats.end_year}} ({{stats.span}} years span)</td>
+                </tr>
+                <tr>
+                    <th>Total Records:</th>
+                    <td>{{stats.total_records}} observations</td>
+                </tr>
+                <tr>
+                    <th>Lowest Recorded:</th>
+                    <td>{{stats.min_val}}</td>
+                </tr>
+                <tr>
+                    <th>Highest Recorded:</th>
+                    <td>{{stats.max_val}}</td>
+                </tr>
+            </table>
+        {{/hasData}}
+
+        {{^hasData}}
+            <div class="alert alert-warning" style="margin-top: 15px; text-align: center;">
+                <strong>No Recorded Data Found</strong><br>
+                There are no life expectancy observations available for this country.
+            </div>
+        {{/hasData}}
+
+    </div>
+</div>

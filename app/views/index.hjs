@@ -24,7 +24,7 @@
             <li><a href="#" hx-get="/features/5" hx-target="#main-container">5. Add Record</a></li>
             <li><a href="#" hx-get="/features/6" hx-target="#main-container">6. Update Record</a></li>
             <li><a href="#" hx-get="/features/7" hx-target="#main-container">7. Delete Records</a></li>
-            <li><a href="#" hx-get="/features/8" hx-target="#main-container">8. Special Feature</a></li>
+            <li><a href="#" hx-get="/features/8" hx-target="#main-container">8. Country Profile</a></li>
         </ul>
     </nav>
 

@@ -1,0 +1,19 @@
+<div class="card fade-in">
+    <h3>Feature 8: Country Comprehensive Profile</h3>
+    <p>View complete identity, geographical hierarchy, and statistical summary for a country.</p>
+
+    <div class="form-group">
+        <label class="form-label">Select Country:</label>
+        <select class="form-control" name="country_id" 
+                hx-get="/api/feature8/result" 
+                hx-target="#result-area-f8" 
+                hx-trigger="change">
+            <option value="">-- Select Country --</option>
+            {{#countries}}
+                <option value="{{id}}">{{name}}</option>
+            {{/countries}}
+        </select>
+    </div>
+
+    <div id="result-area-f8" style="margin-top: 20px;"></div>
+</div>
