@@ -1,0 +1,23 @@
+<div class="card fade-in">
+    <h3>Feature 9: AI Life Expectancy Predictor</h3>
+    <p>Uses Linear Regression (Machine Learning) on historical data to predict values for <strong>2026</strong>.</p>
+
+    <div class="form-group">
+        <label class="form-label">Select Country to Predict:</label>
+        <select class="form-control" name="country_id" 
+                hx-get="/api/feature9/predict" 
+                hx-target="#result-area-f9" 
+                hx-trigger="change">
+            <option value="">-- Select Country --</option>
+            {{#countries}}
+                <option value="{{id}}">{{name}}</option>
+            {{/countries}}
+        </select>
+    </div>
+
+    <div class="htmx-indicator" style="margin-top:10px; color:#555;">
+        Running Algorithm... 🤖
+    </div>
+
+    <div id="result-area-f9" style="margin-top: 20px;"></div>
+</div>

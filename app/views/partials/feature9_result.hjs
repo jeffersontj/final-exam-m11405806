@@ -1,0 +1,31 @@
+{{#error}}
+    <div class="alert alert-warning">{{error}}</div>
+{{/error}}
+
+{{^error}}
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <small style="text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;">AI Prediction for {{target_year}}</small>
+        
+        <h1 style="font-size: 3.5rem; margin: 10px 0;">{{prediction}}</h1>
+        <p style="font-size: 1.2rem;">Years</p>
+        
+        <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 15px; display: flex; justify-content: space-around;">
+            <div>
+                <small>Trend</small><br>
+                <strong>{{trend}}</strong>
+            </div>
+            <div>
+                <small>Last Record ({{last_year}})</small><br>
+                <strong>{{last_recorded}}</strong>
+            </div>
+            <div>
+                <small>Est. Growth/Year</small><br>
+                <strong>{{slope}}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info" style="margin-top: 15px; font-size: 0.9rem;">
+        <strong>How it works:</strong> The system analyzed historical data points and calculated a Linear Regression model (y = mx + b) to project the future trajectory of health outcomes.
+    </div>
+{{/error}}

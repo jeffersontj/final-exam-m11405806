@@ -518,6 +518,92 @@ app.get('/api/feature8/result', async (req, res) => {
     }
 });
 
+// --- FEATURE 9 ROUTES (AI PREDICTOR) ---
+
+// 1. Initial View
+app.get('/features/9', async (req, res) => {
+    try {
+        const [countries] = await pool.query("SELECT id, name FROM Countries ORDER BY name ASC");
+        res.render('partials/feature9_form', { layout: false, countries });
+    } catch (err) { res.send('Error loading feature'); }
+});
+
+// 2. Process Prediction
+app.get('/api/feature9/predict', async (req, res) => {
+    const { country_id } = req.query;
+    if (!country_id) return res.send('');
+
+    try {
+        // Fetch all historical data sorted by year
+        const query = `
+            SELECT year, value 
+            FROM Observations 
+            WHERE country_id = ? 
+            ORDER BY year ASC
+        `;
+        const [rows] = await pool.query(query, [country_id]);
+
+        // We are trying to predict 2026. If 2026, 2027, etc. already exists, stop.
+        const targetYear = 2026;
+        const hasFutureData = rows.some(row => row.year >= targetYear);
+
+        if (hasFutureData) {
+            return res.render('partials/feature9_result', { 
+                layout: false, 
+                error: `Data for year ${targetYear} (or later) already exists in the database. The event has already occurred, so prediction is not applicable.` 
+            });
+        }
+
+        if (rows.length < 2) {
+            return res.render('partials/feature9_result', { 
+                layout: false, 
+                error: "Not enough historical data to generate a prediction (Need at least 2 years of history)." 
+            });
+        }
+
+        // --- LINEAR REGRESSION ALGORITHM ---
+        let n = rows.length;
+        let sumX = 0;   // Sum of Years
+        let sumY = 0;   // Sum of Values
+        let sumXY = 0;  // Sum of Year * Value
+        let sumXX = 0;  // Sum of Year^2
+
+        rows.forEach(row => {
+            let x = row.year;
+            let y = parseFloat(row.value);
+            sumX += x;
+            sumY += y;
+            sumXY += (x * y);
+            sumXX += (x * x);
+        });
+
+        // Calculate Slope (m) and Intercept (b)
+        let slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+        let intercept = (sumY - slope * sumX) / n;
+
+        // Predict for Target Year (2026)
+        let predictedValue = (slope * targetYear) + intercept;
+
+        // Determine Trend
+        let trend = slope > 0 ? "Improving 📈" : "Declining 📉";
+
+        res.render('partials/feature9_result', {
+            layout: false,
+            country_name: "Selected Country",
+            target_year: targetYear,
+            prediction: predictedValue.toFixed(2),
+            trend: trend,
+            slope: slope.toFixed(4),
+            last_recorded: rows[rows.length - 1].value,
+            last_year: rows[rows.length - 1].year
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.send('Error generating prediction');
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port 5806`);
