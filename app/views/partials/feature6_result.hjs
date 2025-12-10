@@ -1,0 +1,8 @@
+<div class="alert alert-success fade-in" style="margin-top: 15px; padding: 15px; background: #d4edda; color: #155724; border-radius: 4px;">
+    <strong>Success!</strong> Record updated.<br>
+    <ul>
+        <li>Year: {{year}}</li>
+        <li>New Value: {{value}}</li>
+    </ul>
+    <button class="btn btn-sm btn-outline-success" hx-get="/features/6" hx-target="#main-container">Update Another</button>
+</div>

@@ -302,6 +302,75 @@ app.post('/api/feature5/add', async (req, res) => {
     }
 });
 
+// --- FEATURE 6 ROUTES ---
+
+// 1. Initial View (Country List)
+app.get('/features/6', async (req, res) => {
+    try {
+        const [countries] = await pool.query("SELECT id, name FROM Countries ORDER BY name ASC");
+        res.render('partials/feature6_form', { layout: false, countries });
+    } catch (err) { res.send('Error loading feature'); }
+});
+
+// 2. Load Years for Selected Country
+app.get('/api/feature6/years', async (req, res) => {
+    const countryId = req.query.country_id;
+    if (!countryId) return res.send(''); // Clear if no country selected
+
+    try {
+        // Only fetch years that actually have data (Observations)
+        const query = `SELECT year FROM Observations WHERE country_id = ? ORDER BY year DESC`;
+        const [years] = await pool.query(query, [countryId]);
+        
+        res.render('partials/feature6_years', { 
+            layout: false, 
+            years: years, 
+            country_id: countryId 
+        });
+    } catch (err) { res.send('Error loading years'); }
+});
+
+// 3. Load Current Value for Editing
+app.get('/api/feature6/value', async (req, res) => {
+    const { country_id, year } = req.query;
+    if (!year) return res.send('');
+
+    try {
+        const query = `SELECT value FROM Observations WHERE country_id = ? AND year = ?`;
+        const [rows] = await pool.query(query, [country_id, year]);
+
+        if (rows.length > 0) {
+            res.render('partials/feature6_input', { 
+                layout: false, 
+                country_id: country_id, 
+                year: year, 
+                current_value: rows[0].value 
+            });
+        } else {
+            res.send('<div class="alert alert-warning">No record found.</div>');
+        }
+    } catch (err) { res.send('Error loading value'); }
+});
+
+// 4. Process Update
+app.post('/api/feature6/update', async (req, res) => {
+    const { country_id, year, value } = req.body;
+
+    try {
+        const query = `UPDATE Observations SET value = ? WHERE country_id = ? AND year = ?`;
+        await pool.query(query, [value, country_id, year]);
+
+        res.render('partials/feature6_result', { 
+            layout: false, 
+            year: year, 
+            value: value 
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('<div class="alert alert-danger">Update failed.</div>');
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port 5806`);

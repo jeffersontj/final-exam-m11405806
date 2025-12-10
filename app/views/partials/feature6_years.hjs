@@ -1,0 +1,13 @@
+<div class="form-group fade-in">
+    <label class="form-label">2. Select Data Year:</label>
+    <select class="form-control" name="year"
+            hx-get="/api/feature6/value"
+            hx-target="#value-container"
+            hx-vals='{"country_id": "{{country_id}}"}'
+            hx-trigger="change">
+        <option value="">-- Select Year --</option>
+        {{#years}}
+            <option value="{{year}}">{{year}}</option>
+        {{/years}}
+    </select>
+</div>

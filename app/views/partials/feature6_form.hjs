@@ -1,0 +1,21 @@
+<div class="card fade-in">
+    <h3>Feature 6: Update Data</h3>
+    <p>Select a country and year to modify an existing record.</p>
+
+    <div class="form-group">
+        <label class="form-label">1. Select Country:</label>
+        <select class="form-control" name="country_id"
+                hx-get="/api/feature6/years"
+                hx-target="#year-container"
+                hx-trigger="change">
+            <option value="">-- Select Country --</option>
+            {{#countries}}
+                <option value="{{id}}">{{name}}</option>
+            {{/countries}}
+        </select>
+    </div>
+
+    <div id="year-container"></div>
+    
+    <div id="value-container"></div>
+</div>

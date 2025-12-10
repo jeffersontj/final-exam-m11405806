@@ -1,0 +1,13 @@
+<form class="fade-in" hx-post="/api/feature6/update" hx-target="#value-container">
+    
+    <input type="hidden" name="country_id" value="{{country_id}}">
+    <input type="hidden" name="year" value="{{year}}">
+
+    <div class="form-group">
+        <label class="form-label">3. Update Value (Year {{year}}):</label>
+        <input type="number" step="0.01" class="form-control" 
+               name="value" value="{{current_value}}" required>
+    </div>
+
+    <button type="submit" class="btn-action w-100">Update Record</button>
+</form>
