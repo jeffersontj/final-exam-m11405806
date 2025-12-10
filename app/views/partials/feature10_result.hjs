@@ -1,0 +1,50 @@
+{{#logs.length}}
+    <table class="table-animate" style="font-size: 0.9rem;">
+        <thead>
+            <tr>
+                <th>Time (UTC+8)</th>
+                <th>Action</th>
+                <th>Country</th>
+                <th>Details</th>
+                <th>Changes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#logs}}
+            <tr>
+                <td style="white-space: nowrap; color: #666; font-family: monospace;">{{formatted_time}}</td>
+                <td>
+                    <span style="
+                        padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; color: white;
+                        background-color: 
+                        {{#old_value}}
+                            {{#new_value}}#f39c12{{/new_value}}
+                            {{^new_value}}#e74c3c{{/new_value}}
+                        {{/old_value}}
+                        {{^old_value}}#27ae60{{/old_value}}
+                    ">
+                        {{action_type}}
+                    </span>
+                </td>
+                <td><strong>{{country_name}}</strong></td>
+                <td>{{details}}</td>
+                <td>
+                    {{#old_value}}
+                        <span style="color: #e74c3c; text-decoration: line-through;">{{old_value}}</span>
+                        &rarr;
+                    {{/old_value}}
+                    {{#new_value}}
+                        <span style="color: #27ae60; font-weight: bold;">{{new_value}}</span>
+                    {{/new_value}}
+                </td>
+            </tr>
+            {{/logs}}
+        </tbody>
+    </table>
+{{/logs.length}}
+
+{{^logs.length}}
+    <div class="alert alert-info">
+        No audit logs found.
+    </div>
+{{/logs.length}}

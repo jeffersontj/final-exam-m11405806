@@ -1,0 +1,18 @@
+<div class="card fade-in">
+    <h3>Feature 10: System Audit Logs</h3>
+    <p>View the history of data modifications. Timestamps are in <strong>Taiwan Time (UTC+8)</strong>.</p>
+
+    <div style="text-align: right; margin-bottom: 15px;">
+        <button class="btn-action" 
+                hx-get="/api/feature10/result" 
+                hx-target="#audit-table-container">
+            🔄 Refresh Logs
+        </button>
+    </div>
+
+    <div id="audit-table-container" 
+         hx-get="/api/feature10/result" 
+         hx-trigger="load">
+        <p class="text-muted">Loading logs...</p>
+    </div>
+</div>

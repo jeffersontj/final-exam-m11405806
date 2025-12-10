@@ -269,36 +269,24 @@ app.get('/api/feature5/prepare', async (req, res) => {
 // 3. Add the Record (POST)
 app.post('/api/feature5/add', async (req, res) => {
     const { country_id, year, value } = req.body;
-
-    // Basic Validation
-    if (!value || isNaN(value)) {
-        return res.send('<div class="alert alert-danger">Please enter a valid numeric value.</div>');
-    }
+    if (!value || isNaN(value)) return res.send('<div class="alert alert-danger">Invalid value.</div>');
 
     try {
-        // 1. Ensure the Year exists in the Years table
         await pool.query("INSERT IGNORE INTO Years (year) VALUES (?)", [year]);
-
-        // 2. Insert the Observation (Assuming Indicator ID 1 is Life Expectancy)
-        const insertQuery = `
-            INSERT INTO Observations (country_id, year, indicator_id, value) 
-            VALUES (?, ?, 1, ?)
-        `;
+        
+        const insertQuery = `INSERT INTO Observations (country_id, year, indicator_id, value) VALUES (?, ?, 1, ?)`;
         await pool.query(insertQuery, [country_id, year, value]);
 
-        res.render('partials/feature5_result', { 
-            layout: false, 
-            year: year, 
-            value: value 
-        });
+        // [AUDIT LOGGING]
+        await pool.query(
+            `INSERT INTO AuditLogs (country_id, action_type, new_value, details) VALUES (?, 'INSERT', ?, ?)`,
+            [country_id, value, `Added record for Year ${year}`]
+        );
 
+        res.render('partials/feature5_result', { layout: false, year, value });
     } catch (err) {
         console.error(err);
-        if (err.code === 'ER_DUP_ENTRY') {
-            res.send('<div class="alert alert-warning">Data for this year already exists!</div>');
-        } else {
-            res.send('<div class="alert alert-danger">Database error: Could not save record.</div>');
-        }
+        res.send('<div class="alert alert-danger">Error saving record.</div>');
     }
 });
 
@@ -357,14 +345,21 @@ app.post('/api/feature6/update', async (req, res) => {
     const { country_id, year, value } = req.body;
 
     try {
+        // 1. Fetch OLD value for the log
+        const [rows] = await pool.query("SELECT value FROM Observations WHERE country_id = ? AND year = ?", [country_id, year]);
+        const oldValue = rows.length > 0 ? rows[0].value : null;
+
+        // 2. Perform Update
         const query = `UPDATE Observations SET value = ? WHERE country_id = ? AND year = ?`;
         await pool.query(query, [value, country_id, year]);
 
-        res.render('partials/feature6_result', { 
-            layout: false, 
-            year: year, 
-            value: value 
-        });
+        // 3. [AUDIT LOGGING]
+        await pool.query(
+            `INSERT INTO AuditLogs (country_id, action_type, old_value, new_value, details) VALUES (?, 'UPDATE', ?, ?, ?)`,
+            [country_id, oldValue, value, `Updated Year ${year}`]
+        );
+
+        res.render('partials/feature6_result', { layout: false, year, value });
     } catch (err) {
         console.error(err);
         res.send('<div class="alert alert-danger">Update failed.</div>');
@@ -422,11 +417,20 @@ app.post('/api/feature7/delete', async (req, res) => {
         const query = `DELETE FROM Observations WHERE country_id = ? AND year BETWEEN ? AND ?`;
         const [result] = await pool.query(query, [country_id, start_year, end_year]);
 
+        // [AUDIT LOGGING]
+        // For range deletes, we log the count and range details
+        if (result.affectedRows > 0) {
+            await pool.query(
+                `INSERT INTO AuditLogs (country_id, action_type, details) VALUES (?, 'DELETE', ?)`,
+                [country_id, `Deleted ${result.affectedRows} records from ${start_year} to ${end_year}`]
+            );
+        }
+
         res.render('partials/feature7_result', { 
             layout: false, 
-            deleted_count: result.affectedRows,
-            start: start_year,
-            end: end_year
+            deleted_count: result.affectedRows, 
+            start: start_year, 
+            end: end_year 
         });
     } catch (err) {
         console.error(err);
@@ -601,6 +605,43 @@ app.get('/api/feature9/predict', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.send('Error generating prediction');
+    }
+});
+
+/// --- FEATURE 10 ROUTES (AUDIT LOGS) ---
+
+// 1. Initial View
+app.get('/features/10', (req, res) => {
+    res.render('partials/feature10_form', { layout: false });
+});
+
+// 2. Fetch Logs (With Taiwan Time Conversion)
+app.get('/api/feature10/result', async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                a.id, 
+                c.name as country_name, 
+                a.action_type, 
+                a.old_value, 
+                a.new_value, 
+                a.details,
+                -- Convert UTC to Taiwan Time (+08:00) and format
+                DATE_FORMAT(CONVERT_TZ(a.log_time, '+00:00', '+08:00'), '%Y-%m-%d %H:%i:%s') as formatted_time
+            FROM AuditLogs a
+            JOIN Countries c ON a.country_id = c.id
+            ORDER BY a.log_time DESC
+            LIMIT 50
+        `;
+        const [rows] = await pool.query(query);
+
+        res.render('partials/feature10_result', { 
+            layout: false, 
+            logs: rows 
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('Error loading audit logs');
     }
 });
 

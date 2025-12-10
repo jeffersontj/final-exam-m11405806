@@ -26,6 +26,7 @@
             <li><a href="#" hx-get="/features/7" hx-target="#main-container">7. Delete Records</a></li>
             <li><a href="#" hx-get="/features/8" hx-target="#main-container">8. Country Profile</a></li>
             <li><a href="#" hx-get="/features/9" hx-target="#main-container">9. AI Predictor 🤖</a></li>
+            <li><a href="#" hx-get="/features/10" hx-target="#main-container">10. Audit Logs 🛡️</a></li>
         </ul>
     </nav>
 
