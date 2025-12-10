@@ -22,12 +22,74 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// --- MAIN ROUTE ---
-app.get('/', (req, res) => {
-    res.render('index', { 
-        title: 'Life Expectancy Dashboard',
-        studentId: 'm11405806'
+// --- ROOT ROUTE (Main Dashboard) ---
+app.get('/', async (req, res) => {
+    try {
+        // 1. Get Global Stats
+        const [countCountries] = await pool.query("SELECT COUNT(*) as c FROM Countries");
+        const [countObs] = await pool.query("SELECT COUNT(*) as c FROM Observations");
+        const [globalAvg] = await pool.query("SELECT AVG(value) as a FROM Observations");
+        
+        // 2. Get Country List for the Dropdown
+        const [countries] = await pool.query("SELECT id, name FROM Countries ORDER BY name ASC");
+
+        res.render('index', { 
+            title: 'Life Expectancy Dashboard',
+            studentId: 'm11405806',
+            // Pass statistics directly to index.hjs
+            stat_countries: countCountries[0].c,
+            stat_records: countObs[0].c,
+            stat_avg: parseFloat(globalAvg[0].a).toFixed(2),
+            countries: countries,
+            // Flag to identify we are on home
+            isHome: true 
+        });
+    } catch (err) {
+        console.error(err);
+        res.send("Database Connection Error");
+    }
+});
+
+// --- KEEP THIS: Route for Sidebar "Home" Button (HTMX Partial) ---
+// If user goes to Feature 1 and wants to come back to Home without refreshing page
+app.get('/features/welcome', async (req, res) => {
+    // Exact same logic as above, but renders only the partial
+    const [countCountries] = await pool.query("SELECT COUNT(*) as c FROM Countries");
+    const [countObs] = await pool.query("SELECT COUNT(*) as c FROM Observations");
+    const [globalAvg] = await pool.query("SELECT AVG(value) as a FROM Observations");
+    const [countries] = await pool.query("SELECT id, name FROM Countries ORDER BY name ASC");
+
+    res.render('partials/dashboard_home', { 
+        layout: false,
+        stat_countries: countCountries[0].c,
+        stat_records: countObs[0].c,
+        stat_avg: parseFloat(globalAvg[0].a).toFixed(2),
+        countries: countries
     });
+});
+
+// --- KEEP THIS: Chart Data API ---
+app.get('/api/dashboard/chart', async (req, res) => {
+    const { country_id } = req.query;
+    if (!country_id) return res.send('<div class="alert alert-info">Select a country to view the trendline.</div>');
+
+    try {
+        const query = `SELECT year, value FROM Observations WHERE country_id = ? ORDER BY year ASC`;
+        const [rows] = await pool.query(query, [country_id]);
+        const [countryInfo] = await pool.query("SELECT name FROM Countries WHERE id = ?", [country_id]);
+
+        if (rows.length === 0) return res.send('<div class="alert alert-warning">No data available.</div>');
+
+        const labels = rows.map(r => r.year);
+        const data = rows.map(r => r.value);
+
+        res.render('partials/dashboard_chart', { 
+            layout: false, 
+            country_name: countryInfo[0].name,
+            labels: JSON.stringify(labels),
+            data: JSON.stringify(data)
+        });
+    } catch (err) { res.send("Error loading chart"); }
 });
 
 // --- FEATURE 1 ROUTES ---

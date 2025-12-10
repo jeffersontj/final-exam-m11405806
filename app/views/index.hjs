@@ -6,37 +6,83 @@
     <title>{{ title }}</title>
     <link rel="stylesheet" href="/css/dashboard.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { display: flex; flex-direction: column; height: 100vh; margin: 0; }
+        .wrapper { display: flex; flex: 1; overflow: hidden; }
+    </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <div class="sidebar-header">
-            <h2>Life Expectancy Dashboard</h2>
-            <small>By: Cornelius Jefferson Tjahjono</small><br>
-            <small>ID: {{ studentId }}</small>
-        </div>
-        <ul class="nav-links">
-            <li><a href="#" hx-get="/features/welcome" hx-target="#main-container">🏠 Home</a></li>
-            <li><a href="#" hx-get="/features/1" hx-target="#main-container">1. Country History</a></li>
-            <li><a href="#" hx-get="/features/2" hx-target="#main-container">2. Sub-Region Rank</a></li>
-            <li><a href="#" hx-get="/features/3" hx-target="#main-container">3. Region Stats</a></li>
-            <li><a href="#" hx-get="/features/4" hx-target="#main-container">4. Search Country</a></li>
-            <li><a href="#" hx-get="/features/5" hx-target="#main-container">5. Add Record</a></li>
-            <li><a href="#" hx-get="/features/6" hx-target="#main-container">6. Update Record</a></li>
-            <li><a href="#" hx-get="/features/7" hx-target="#main-container">7. Delete Records</a></li>
-            <li><a href="#" hx-get="/features/8" hx-target="#main-container">8. Country Profile</a></li>
-            <li><a href="#" hx-get="/features/9" hx-target="#main-container">9. AI Predictor 🤖</a></li>
-            <li><a href="#" hx-get="/features/10" hx-target="#main-container">10. Audit Logs 🛡️</a></li>
-        </ul>
-    </nav>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>Life Expectancy Dashboard</h2>
+                <small>By: Cornelius Jefferson Tjahjono</small><br>
+                <small>ID: {{ studentId }}</small>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" hx-get="/features/welcome" hx-target="#main-container" class="active">🏠 Home</a></li>
+                <li><a href="#" hx-get="/features/1" hx-target="#main-container">📜 Country History</a></li>
+                <li><a href="#" hx-get="/features/2" hx-target="#main-container">📊 Sub-Region Rank</a></li>
+                <li><a href="#" hx-get="/features/3" hx-target="#main-container">🌍 Region Stats</a></li>
+                <li><a href="#" hx-get="/features/4" hx-target="#main-container">🔍 Search Country</a></li>
+                <li><a href="#" hx-get="/features/5" hx-target="#main-container">➕ Add Record</a></li>
+                <li><a href="#" hx-get="/features/6" hx-target="#main-container">✏️ Update Record</a></li>
+                <li><a href="#" hx-get="/features/7" hx-target="#main-container">🗑️ Delete Records</a></li>
+                <li><a href="#" hx-get="/features/8" hx-target="#main-container">🆔 Country Profile</a></li>
+                <li><a href="#" hx-get="/features/9" hx-target="#main-container">🤖 AI Predictor</a></li>
+                <li><a href="#" hx-get="/features/10" hx-target="#main-container">🛡️ Audit Logs</a></li>
+            </ul>
+        </nav>
 
-    <main class="main-content" id="main-container">
-        <div class="card">
-            <h3>Welcome to the Dashboard</h3>
-            <p>Select a feature from the sidebar to begin.</p>
-            <p class="text-muted">Developed by Cornelius Jefferson Tjahjono ({{ studentId }}) for Software Engineering in Construction Information Systems - Final Exam</p>
-        </div>
-    </main>
+        <main class="main-content" id="main-container">
+            
+            <div class="fade-in">
+                <h2 style="color: #2c3e50; margin-bottom: 5px;">Global Overview</h2>
+                <p class="text-muted" style="margin-bottom: 20px;">
+                    👋 Welcome! Please <strong>use the sidebar</strong> on the left to explore all the features of this system.
+                </p>
+
+                <div style="display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
+                    <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #3498db;">
+                        <small class="text-muted">Total Countries</small>
+                        <div style="font-size: 2rem; font-weight: bold; color: #2c3e50;">{{stat_countries}}</div>
+                    </div>
+                    <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #27ae60;">
+                        <small class="text-muted">Total Observations</small>
+                        <div style="font-size: 2rem; font-weight: bold; color: #2c3e50;">{{stat_records}}</div>
+                    </div>
+                    <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 5px solid #f39c12;">
+                        <small class="text-muted">Global Avg LE</small>
+                        <div style="font-size: 2rem; font-weight: bold; color: #2c3e50;">{{stat_avg}} <span style="font-size: 1rem;">yrs</span></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">📈 Country Trend Analysis</h3>
+                        <div style="width: 300px;">
+                            <select class="form-control" name="country_id"
+                                    hx-get="/api/dashboard/chart"
+                                    hx-target="#chart-wrapper"
+                                    hx-trigger="change">
+                                <option value="">-- Select Country --</option>
+                                {{#countries}}
+                                    <option value="{{id}}">{{name}}</option>
+                                {{/countries}}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="chart-wrapper" style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: #fafafa; border-radius: 8px;">
+                        <p class="text-muted">Select a country above to visualize the trendline.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
 
     <script>
         document.querySelectorAll('.nav-links a').forEach(link => {

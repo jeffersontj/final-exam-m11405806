@@ -1,0 +1,51 @@
+<div style="position: relative; height: 400px; width: 100%;">
+    <canvas id="lifeExpectancyChart"></canvas>
+</div>
+
+<script>
+    // 1. Get the canvas context
+    var ctx = document.getElementById('lifeExpectancyChart').getContext('2d');
+    
+    // 2. Create Gradient
+    var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(52, 152, 219, 0.5)'); 
+    gradient.addColorStop(1, 'rgba(52, 152, 219, 0.0)'); 
+
+    // 3. Initialize Chart
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{{labels}}}, 
+            datasets: [{
+                label: 'Life Expectancy (Years) - {{country_name}}',
+                data: {{{data}}}, 
+                borderColor: '#3498db',
+                backgroundColor: gradient,
+                borderWidth: 2,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#3498db',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.3 
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    title: { display: true, text: 'Age (Years)' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
