@@ -171,6 +171,54 @@ app.get('/api/feature3/result', async (req, res) => {
     }
 });
 
+// --- FEATURE 4 ROUTES ---
+
+// 1. Get the Form View
+app.get('/features/4', (req, res) => {
+    res.render('partials/feature4_form', { layout: false });
+});
+
+// 2. Get the Search Results
+app.get('/api/feature4/result', async (req, res) => {
+    const keyword = req.query.keyword || ''; // Handle empty search
+
+    if (!keyword) {
+        return res.send('<p class="text-muted">Type above to begin searching...</p>');
+    }
+    
+    try {
+        // Query Logic:
+        // 1. Filter Countries by name (LIKE %keyword%)
+        // 2. Join Observations
+        // 3. Filter Observation to be ONLY the latest year for that specific country
+        const query = `
+            SELECT c.name AS country_name, o.year, o.value
+            FROM Countries c
+            JOIN Observations o ON c.id = o.country_id
+            WHERE c.name LIKE ? 
+            AND o.year = (
+                SELECT MAX(year) 
+                FROM Observations 
+                WHERE country_id = c.id
+            )
+            ORDER BY c.name ASC
+        `;
+
+        // Add wildcards for partial match
+        const searchTerm = `%${keyword}%`;
+        const [rows] = await pool.query(query, [searchTerm]);
+
+        res.render('partials/feature4_result', { 
+            layout: false, 
+            data: rows,
+            keyword: keyword
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('Error searching countries');
+    }
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port 5806`);

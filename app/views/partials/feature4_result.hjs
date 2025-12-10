@@ -1,0 +1,29 @@
+{{#data.length}}
+    <h4 class="text-muted">Search Results</h4>
+    <table class="table-animate">
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>Latest Data Year</th>
+                <th>Life Expectancy</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#data}}
+            <tr>
+                <td>{{country_name}}</td>
+                <td><span class="badge bg-secondary">{{year}}</span></td>
+                <td><strong>{{value}}</strong></td>
+            </tr>
+            {{/data}}
+        </tbody>
+    </table>
+{{/data.length}}
+
+{{^data.length}}
+    {{#keyword}}
+        <div style="padding: 15px; background: #fff3cd; color: #856404; border-radius: 4px;">
+            No countries found matching "<strong>{{keyword}}</strong>".
+        </div>
+    {{/keyword}}
+{{/data.length}}

@@ -1,0 +1,19 @@
+<div class="card fade-in">
+    <h3>Feature 4: Country Search</h3>
+    <p>Search for a country to see its latest available Life Expectancy data.</p>
+
+    <div class="form-group">
+        <label class="form-label">Search Country Name:</label>
+        <input type="search" 
+               class="form-control" 
+               name="keyword" 
+               placeholder="Type a country name (e.g. 'United')..."
+               hx-get="/api/feature4/result" 
+               hx-target="#result-area-f4" 
+               hx-trigger="keyup changed delay:500ms, search">
+    </div>
+
+    <div id="result-area-f4" style="margin-top: 20px;">
+        <p class="text-muted">Type above to begin searching...</p>
+    </div>
+</div>
