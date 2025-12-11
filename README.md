@@ -70,6 +70,7 @@ docker compose exec db mysql -u user5806 -ppassword5806 life_expectancy
 ```text
 final-exam-m11405806/
 ├── .git/                        # Git repository data
+├── .gitattributes               # Make sure Git not change .csv format
 ├── app/                         # Main Node.js Application
 │   ├── node_modules/                 
 │   ├── public/css               # Static assets (CSS, JS)
