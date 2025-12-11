@@ -6,3 +6,21 @@
     </p>
     <button class="btn btn-sm btn-outline-dark" hx-get="/features/7" hx-target="#main-container">Delete More</button>
 </div>
+
+<script>
+    // 1. Hide the Delete Button
+    if(document.getElementById('btnDelete')) {
+        document.getElementById('btnDelete').style.display = 'none';
+    }
+
+    // 2. Freeze all dropdowns to prevent accidental submission
+    if(document.getElementById('country_select_7')) {
+        document.getElementById('country_select_7').disabled = true;
+    }
+    if(document.getElementById('start_year_select')) {
+        document.getElementById('start_year_select').disabled = true;
+    }
+    if(document.getElementById('end_year_select')) {
+        document.getElementById('end_year_select').disabled = true;
+    }
+</script>

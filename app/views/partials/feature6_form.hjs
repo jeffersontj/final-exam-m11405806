@@ -5,9 +5,11 @@
     <div class="form-group">
         <label class="form-label">1. Select Country:</label>
         <select class="form-control" name="country_id"
+                id="country_select"
                 hx-get="/api/feature6/years"
                 hx-target="#year-container"
-                hx-trigger="change">
+                hx-trigger="change"
+                onchange="document.getElementById('value-container').innerHTML = ''">
             <option value="">-- Select Country --</option>
             {{#countries}}
                 <option value="{{id}}">{{name}}</option>

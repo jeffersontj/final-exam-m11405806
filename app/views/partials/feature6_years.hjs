@@ -1,6 +1,7 @@
 <div class="form-group fade-in">
     <label class="form-label">2. Select Data Year:</label>
     <select class="form-control" name="year"
+            id="year_select"
             hx-get="/api/feature6/value"
             hx-target="#value-container"
             hx-vals='{"country_id": "{{country_id}}"}'

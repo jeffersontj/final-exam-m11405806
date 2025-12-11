@@ -7,3 +7,14 @@
     </ul>
     <button class="btn btn-sm btn-outline-success" hx-get="/features/5" hx-target="#main-container">Add Another</button>
 </div>
+
+<script>
+    (function() {
+        var dropdown = document.getElementById('country_selector_f5');
+        if (dropdown) {
+            dropdown.disabled = true; // Disable interaction
+            dropdown.style.backgroundColor = "#e9ecef"; // Visual cue (greyed out)
+            dropdown.style.cursor = "not-allowed";
+        }
+    })();
+</script>

@@ -4,5 +4,18 @@
         <li>Year: {{year}}</li>
         <li>New Value: {{value}}</li>
     </ul>
-    <button class="btn btn-sm btn-outline-success" hx-get="/features/6" hx-target="#main-container">Update Another</button>
+    
+    <button class="btn btn-sm btn-outline-success" hx-get="/features/6" hx-target="#main-container">
+        Update Another
+    </button>
 </div>
+
+<script>
+    // FREEZE the dropdowns from the parent forms
+    if(document.getElementById('country_select')) {
+        document.getElementById('country_select').disabled = true;
+    }
+    if(document.getElementById('year_select')) {
+        document.getElementById('year_select').disabled = true;
+    }
+</script>

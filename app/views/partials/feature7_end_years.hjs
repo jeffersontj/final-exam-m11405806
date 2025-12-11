@@ -1,6 +1,6 @@
 <div class="form-group fade-in">
     <label class="form-label">3. To Year:</label>
-    <select class="form-control" name="end_year" required>
+    <select class="form-control" name="end_year" id="end_year_select" required onchange="toggleDelete(this)">
         <option value="">-- Select End Year --</option>
         {{#years}}
             <option value="{{year}}">{{year}}</option>
@@ -9,11 +9,31 @@
 </div>
 
 <button type="button" 
+        id="btnDelete"
         class="btn-action fade-in" 
-        style="background-color: #e74c3c; width: 100%;"
+        style="background-color: #e74c3c; width: 100%; opacity: 0.5; cursor: not-allowed;"
+        disabled
         hx-post="/api/feature7/delete"
         hx-target="#result-area"
         hx-confirm="Are you sure you want to delete these records?"
         hx-include="closest form">
     Delete Records
 </button>
+
+<script>
+    // Function to Enable/Disable Button based on selection
+    function toggleDelete(selectElement) {
+        const btn = document.getElementById('btnDelete');
+        if (selectElement.value) {
+            // Enable
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+        } else {
+            // Disable
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+        }
+    }
+</script>

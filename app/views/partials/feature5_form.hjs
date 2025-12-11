@@ -4,7 +4,7 @@
 
     <div class="form-group">
         <label class="form-label">Select Country:</label>
-        <select class="form-control" name="country_id" 
+        <select id="country_selector_f5" class="form-control" name="country_id" 
                 hx-get="/api/feature5/prepare" 
                 hx-target="#input-area" 
                 hx-trigger="change">

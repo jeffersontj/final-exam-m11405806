@@ -1,10 +1,15 @@
 <div class="form-group fade-in">
     <label class="form-label">2. From Year:</label>
     <select class="form-control" name="start_year"
+            id="start_year_select"
             hx-get="/api/feature7/end_years"
             hx-target="#end-container"
             hx-vals='{"country_id": "{{country_id}}"}'
-            hx-trigger="change">
+            hx-trigger="change"
+            onchange="
+                document.getElementById('end-container').innerHTML = '';
+                document.getElementById('result-area').innerHTML = '';
+            ">
         <option value="">-- Select Start Year --</option>
         {{#years}}
             <option value="{{year}}">{{year}}</option>

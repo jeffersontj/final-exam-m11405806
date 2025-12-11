@@ -17,12 +17,9 @@
                     <span style="
                         padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; color: white;
                         background-color: 
-                        {{#old_value}}
-                            {{#new_value}}#f39c12{{/new_value}}
-                            {{^new_value}}#e74c3c{{/new_value}}
-                        {{/old_value}}
-                        {{^old_value}}#27ae60{{/old_value}}
-                    ">
+                            {{#new_value}}
+                                {{#old_value}}#f39c12{{/old_value}} {{^old_value}}#27ae60{{/old_value}} {{/new_value}}
+                            {{^new_value}}#e74c3c{{/new_value}}     ">
                         {{action_type}}
                     </span>
                 </td>

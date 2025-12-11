@@ -707,6 +707,11 @@ app.get('/api/feature10/result', async (req, res) => {
     }
 });
 
+// --- 404 ERROR HANDLER (MUST BE THE LAST ROUTE) ---
+app.use((req, res, next) => {
+    res.status(404).render('404', { layout: false });
+});
+
 // START SERVER
 app.listen(port, () => {
     console.log(`Server running on port 5806`);
